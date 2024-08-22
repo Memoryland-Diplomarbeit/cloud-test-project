@@ -1,6 +1,13 @@
 # idea folder
 **/.idea
 
+# db
+datasource.txt
+postgres-create-db.sh
+postgres-run-in-docker.sh
+postgres-start.sh
+postgres-stop.sh
+src/
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,jetbrains,rider,csharp
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,jetbrains,rider,csharp
