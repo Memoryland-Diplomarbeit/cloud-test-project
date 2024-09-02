@@ -1,9 +1,11 @@
+using CloudTestProject.ApiControllers;
+using Core.DTO;
 using Core.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 
-namespace CloudTestProject.ApiControllers;
+namespace CloudTestProject.Controllers;
 
 [Route("users")]
 public class UserApiController : ApiControllerBase
@@ -28,5 +30,21 @@ public class UserApiController : ApiControllerBase
         }
         
         return TypedResults.Ok(Context.Users.AsEnumerable());
+    }
+    
+    [HttpPost]
+    public async Task<Ok> PostUsers(UserDto userDto)
+    {
+        User user = new User
+        {
+            Email = userDto.Email,
+            Username = userDto.Username,
+            PhotoAlbums = new HashSet<PhotoAlbum>(),
+            Memorylands = new HashSet<Memoryland>()
+        };
+        
+        await Context.AddAsync(user);
+        await Context.SaveChangesAsync();
+        return TypedResults.Ok();
     }
 }

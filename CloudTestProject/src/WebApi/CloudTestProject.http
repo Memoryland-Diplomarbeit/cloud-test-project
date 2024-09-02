@@ -4,3 +4,15 @@ GET {{CloudTestProject_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET https://test-cloud-memoryland.azurewebsites.net/hello
+
+
+###
+
+GET https://test-cloud-memoryland.azurewebsites.net/users
+Accept: application/json
+
+###
+
+POST https://test-cloud-memoryland.azurewebsites.net/users
