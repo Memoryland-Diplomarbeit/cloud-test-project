@@ -1,6 +1,6 @@
 @CloudTestProject_HostAddress = http://localhost:5238
 
-GET {{CloudTestProject_HostAddress}}/weatherforecast/
+GET {{CloudTestProject_HostAddress}}/users/
 Accept: application/json
 
 ###
@@ -16,3 +16,10 @@ Accept: application/json
 ###
 
 POST https://test-cloud-memoryland.azurewebsites.net/users
+Content-Type: application/json
+
+{
+  "email": "abc",
+  "username": "abc"
+}
+

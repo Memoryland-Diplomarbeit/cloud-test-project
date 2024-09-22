@@ -21,8 +21,7 @@ public class ApplicationDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddUserSecrets<ApplicationDbContext>()
                 .Build();
         
             optionsBuilder

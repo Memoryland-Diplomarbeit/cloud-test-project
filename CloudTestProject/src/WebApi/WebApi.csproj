@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>CloudTestProject</RootNamespace>
+    <UserSecretsId>c6f53024-05f9-47ba-9008-0392cb75437d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
