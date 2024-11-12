@@ -33,7 +33,7 @@ public class UserApiController : ApiControllerBase
     }
     
     [HttpPost]
-    public async Task<Ok> PostUsers(UserDto userDto)
+    public async Task<Created> PostUsers(UserDto userDto)
     {
         User user = new User
         {
@@ -45,6 +45,6 @@ public class UserApiController : ApiControllerBase
         
         await Context.AddAsync(user);
         await Context.SaveChangesAsync();
-        return TypedResults.Ok();
+        return TypedResults.Created();
     }
 }
