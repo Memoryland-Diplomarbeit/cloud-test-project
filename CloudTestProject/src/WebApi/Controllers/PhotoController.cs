@@ -69,6 +69,11 @@ public class PhotoController : ApiControllerBase
     [HttpPost]
     public async Task<Results<Created, BadRequest<string>>> PostImage([FromForm] PostPhotoDto<IFormFile> photoDto)
     {
+        if (!Context.PhotoAlbums.Any(pa => pa.Id == photoDto.PhotoAlbumId))
+        {
+            return TypedResults.BadRequest("No photo album found");
+        }
+        
         if (photoDto.Photo.Length == 0)
         {
             return TypedResults.BadRequest("No image file provided.");
