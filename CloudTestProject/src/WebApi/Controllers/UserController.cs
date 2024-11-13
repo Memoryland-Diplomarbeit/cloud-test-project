@@ -7,14 +7,13 @@ using Persistence;
 
 namespace CloudTestProject.Controllers;
 
-[Route("users")]
-public class UserApiController : ApiControllerBase
+public class UserController : ApiControllerBase
 {
     #region Properties and Constructors
 
-    public ApplicationDbContext Context { get; set; }
+    private ApplicationDbContext Context { get; set; }
 
-    public UserApiController(ApplicationDbContext context)
+    public UserController(ApplicationDbContext context)
     {
         Context = context;
     }
@@ -33,7 +32,7 @@ public class UserApiController : ApiControllerBase
     }
     
     [HttpPost]
-    public async Task<Created> PostUsers(UserDto userDto)
+    public async Task<Created> PostUser(UserDto userDto)
     {
         User user = new User
         {
