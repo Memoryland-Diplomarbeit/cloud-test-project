@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+#nullable disable
 [Index(nameof(Position), nameof(MemorylandId), IsUnique = true)]
 public class MemorylandConfiguration : BaseEntity
 {

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+#nullable disable
 [Index(nameof(Email), IsUnique = true), Index(nameof(Username), IsUnique = true)]
 public class User : BaseEntity
 {

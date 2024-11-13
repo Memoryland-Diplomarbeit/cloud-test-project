@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+#nullable disable
 [Index(nameof(Name), nameof(PhotoAlbumId), IsUnique = true)]
 public class Photo : BaseEntity
 {
