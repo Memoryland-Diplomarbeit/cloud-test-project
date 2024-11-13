@@ -21,6 +21,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("hello", () => "Hello World!");
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.MapControllers();
 
 app.Run();
