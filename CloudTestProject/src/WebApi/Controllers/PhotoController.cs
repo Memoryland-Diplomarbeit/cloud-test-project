@@ -48,7 +48,7 @@ public class PhotoController : ApiControllerBase
         
         if (!Context.PhotoAlbums.Any(pa => pa.Id == albumId))
         {
-            return TypedResults.BadRequest("No photo album found");
+            return TypedResults.BadRequest("The photo album doesn't exist.");
         }
         
         var photo = Context.Photos
@@ -71,7 +71,7 @@ public class PhotoController : ApiControllerBase
     {
         if (!Context.PhotoAlbums.Any(pa => pa.Id == photoDto.PhotoAlbumId))
         {
-            return TypedResults.BadRequest("No photo album found");
+            return TypedResults.BadRequest("The photo album doesn't exist.");
         }
         
         if (photoDto.Photo.Length == 0)
