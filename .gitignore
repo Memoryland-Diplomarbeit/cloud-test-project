@@ -9,6 +9,7 @@ postgres-run-in-docker.sh
 postgres-start.sh
 postgres-stop.sh
 src/main/docker
+**/db-postgres
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,jetbrains,rider,csharp
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,jetbrains,rider,csharp
