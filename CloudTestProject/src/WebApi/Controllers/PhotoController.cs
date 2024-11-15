@@ -9,7 +9,9 @@ using Persistence;
 
 namespace CloudTestProject.Controllers;
 
-public class PhotoController(ApplicationDbContext context, BlobStoragePhotoService blobStoragePhotoSvc)
+public class PhotoController(
+    ApplicationDbContext context,
+    BlobStoragePhotoService blobStoragePhotoSvc)
     : ApiControllerBase
 {
     private ApplicationDbContext Context { get; set; } = context;
@@ -17,9 +19,9 @@ public class PhotoController(ApplicationDbContext context, BlobStoragePhotoServi
 
     [HttpGet]
     [Route("{albumId:int}/{photoName}")]
-    public Results<NotFound, Ok<byte[]>, BadRequest<string>> GetImage(int albumId, string photoName)
+    public async Task<Results<NotFound, Ok<Uri>, BadRequest<string>>> GetImage(int albumId, string photoName)
     {
-        var result = GetImageWithDetails(albumId, photoName);
+        var result = await GetImageWithDetails(albumId, photoName);
         
         if (result.Result is BadRequest<string> badRequest) return badRequest;
         
@@ -37,7 +39,7 @@ public class PhotoController(ApplicationDbContext context, BlobStoragePhotoServi
     
     [HttpGet]
     [Route("{albumId:int}/{photoName}/details")]
-    public Results<NotFound, Ok<PhotoDto>, BadRequest<string>> GetImageWithDetails(int albumId, string photoName)
+    public async Task<Results<NotFound, Ok<PhotoDto>, BadRequest<string>>> GetImageWithDetails(int albumId, string photoName)
     {
         if (!Context.Photos.Any()) return TypedResults.NotFound();
         
@@ -47,18 +49,25 @@ public class PhotoController(ApplicationDbContext context, BlobStoragePhotoServi
         }
         
         var photo = Context.Photos
+            .Include(p => p.PhotoAlbum.User)
             .FirstOrDefault(p => 
                 p.PhotoAlbumId == albumId && p.Name == photoName);
 
         if (photo == null) return TypedResults.NotFound();
         
+        var uri = await PhotoSvc.GetPhoto(
+            photo.PhotoAlbum.User.Username,
+            photo.PhotoAlbum.Name,
+            photo.Name);
+        
+        if (uri == null) return TypedResults.NotFound();
+        
         var photoDto = new PhotoDto(
             photo.Name,
             photo.PhotoAlbumId,
-            [0]);
+            uri);
             
         return TypedResults.Ok(photoDto);
-
     }
     
     [HttpPost]
@@ -90,10 +99,12 @@ public class PhotoController(ApplicationDbContext context, BlobStoragePhotoServi
         await Context.AddAsync(photo);
         await Context.SaveChangesAsync();
         
-        var album = Context.PhotoAlbums.Include(photoAlbum => photoAlbum.User).FirstOrDefault(pa => pa.Id == photo.PhotoAlbumId);
+        var album = Context.PhotoAlbums
+            .Include(photoAlbum => photoAlbum.User)
+            .FirstOrDefault(pa => pa.Id == photo.PhotoAlbumId);
         
         await PhotoSvc.UploadPhoto(
-            album!.User.Username, // we use the album we saved the photo to before
+            album!.User.Username,
             album.Name,
             photo.Name,
             photoData);

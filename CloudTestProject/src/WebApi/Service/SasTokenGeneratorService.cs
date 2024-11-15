@@ -1,3 +1,4 @@
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
@@ -5,20 +6,23 @@ using Azure.Storage.Sas;
 
 namespace CloudTestProject.Service;
 
-public class SasTokenGeneratorService
+public static class SasTokenGeneratorService
 {
-    private static double TokenLifeTimeInHours { get; } = 0.25; //TODO: what length should this have?
+    private static double TokenLifeTimeInHours { get; } = 1; //TODO: what length should this have?
 
-    private static async Task<UserDelegationKey> RequestUserDelegationKey(BlobServiceClient blobServiceClient)
+    private static async Task<UserDelegationKey> RequestUserDelegationKey(
+        BlobServiceClient blobServiceClient)
     {
+        //TODO: manage token lifetime and don't always get new token
         return await blobServiceClient.GetUserDelegationKeyAsync(
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow.AddHours(TokenLifeTimeInHours));
     }
     
-    public static async Task<Uri> CreateUserDelegationSasBlob(
+    public static Uri CreateUserDelegationSasBlob(
         BlobClient blobClient,
-        BlobServiceClient blobServiceClient)
+        BlobServiceClient blobServiceClient,
+        string accessKey)
     {
         var sasBuilder = new BlobSasBuilder()
         {
@@ -31,16 +35,31 @@ public class SasTokenGeneratorService
 
         sasBuilder.SetPermissions(BlobSasPermissions.Read | BlobSasPermissions.Write);
 
-        // Add the SAS token to the blob URI
+        // var userDelegationKey = await RequestUserDelegationKey(blobServiceClient);
+        //
+        // // Add the SAS token to the blob URI
+        // var uriBuilder = new BlobUriBuilder(blobClient.Uri)
+        // {
+        //     // Specify the user delegation key
+        //     Sas = sasBuilder.ToSasQueryParameters(
+        //         userDelegationKey,
+        //         blobClient
+        //             .GetParentBlobContainerClient()
+        //             .GetParentBlobServiceClient()
+        //             .AccountName)
+        // };
+
+        var blobSvcClient = blobClient
+            .GetParentBlobContainerClient()
+            .GetParentBlobServiceClient();
+        
+        var storageSharedKeyCredential = new StorageSharedKeyCredential(
+            blobSvcClient.AccountName,
+            accessKey);
+
         var uriBuilder = new BlobUriBuilder(blobClient.Uri)
         {
-            // Specify the user delegation key
-            Sas = sasBuilder.ToSasQueryParameters(
-                await RequestUserDelegationKey(blobServiceClient),
-                blobClient
-                    .GetParentBlobContainerClient()
-                    .GetParentBlobServiceClient()
-                    .AccountName)
+            Sas = sasBuilder.ToSasQueryParameters(storageSharedKeyCredential)
         };
 
         return uriBuilder.ToUri();
@@ -60,13 +79,15 @@ public class SasTokenGeneratorService
 
         // Specify the necessary permissions
         sasBuilder.SetPermissions(BlobSasPermissions.Read | BlobSasPermissions.Write);
+        
+        var userDelegationKey = await RequestUserDelegationKey(blobServiceClient);
 
         // Add the SAS token to the blob URI
         var uriBuilder = new BlobUriBuilder(containerClient.Uri)
         {
             // Specify the user delegation key
             Sas = sasBuilder.ToSasQueryParameters(
-                await RequestUserDelegationKey(blobServiceClient),
+                userDelegationKey,
                 containerClient.GetParentBlobServiceClient().AccountName)
         };
 

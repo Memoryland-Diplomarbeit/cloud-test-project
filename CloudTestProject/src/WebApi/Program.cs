@@ -11,6 +11,7 @@ builder.Services.AddSingleton<BlobStoragePhotoService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var storageConnection = builder.Configuration["ConnectionStrings:BlobStorageDefault"];
 

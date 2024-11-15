@@ -34,6 +34,13 @@ public class UserController : ApiControllerBase
     [HttpPost]
     public async Task<Created> PostUser(UserDto userDto)
     {
+        //TODO: (From: AZURE)
+        // This name may only contain lowercase letters,
+        // numbers, and hyphens, and must begin with a letter
+        // or a number. Each hyphen must be preceded and followed
+        // by a non-hyphen character. The name must also be
+        // between 3 and 63 characters long.
+        
         User user = new User
         {
             Email = userDto.Email,
