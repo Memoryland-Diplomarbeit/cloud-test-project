@@ -1,4 +1,5 @@
 using CloudTestProject.ApiControllers;
+using CloudTestProject.Service;
 using Core.DTO;
 using Core.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -7,19 +8,12 @@ using Persistence;
 
 namespace CloudTestProject.Controllers;
 
-public class PhotoController : ApiControllerBase
+public class PhotoController(ApplicationDbContext context, BlobStoragePhotoService blobStoragePhotoSvc)
+    : ApiControllerBase
 {
-    #region Properties and Constructors
+    private ApplicationDbContext Context { get; set; } = context;
+    private BlobStoragePhotoService PhotoSvc { get; set; } = blobStoragePhotoSvc;
 
-    private ApplicationDbContext Context { get; set; }
-
-    public PhotoController(ApplicationDbContext context)
-    {
-        Context = context;
-    }
-
-    #endregion
-    
     [HttpGet]
     [Route("{albumId:int}/{photoName}")]
     public Results<NotFound, Ok<byte[]>, BadRequest<string>> GetImage(int albumId, string photoName)
