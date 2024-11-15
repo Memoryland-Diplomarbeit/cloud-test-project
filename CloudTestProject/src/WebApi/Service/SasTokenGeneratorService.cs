@@ -7,13 +7,13 @@ namespace CloudTestProject.Service;
 
 public class SasTokenGeneratorService
 {
-    private static double TokenLifeTimeInDays { get; } = 1; //TODO: what length should this have?
+    private static double TokenLifeTimeInHours { get; } = 0.25; //TODO: what length should this have?
 
     private static async Task<UserDelegationKey> RequestUserDelegationKey(BlobServiceClient blobServiceClient)
     {
         return await blobServiceClient.GetUserDelegationKeyAsync(
             DateTimeOffset.UtcNow,
-            DateTimeOffset.UtcNow.AddDays(TokenLifeTimeInDays));
+            DateTimeOffset.UtcNow.AddHours(TokenLifeTimeInHours));
     }
     
     public static async Task<Uri> CreateUserDelegationSasBlob(
@@ -26,7 +26,7 @@ public class SasTokenGeneratorService
             BlobName = blobClient.Name,
             Resource = "b", // Blob resource
             StartsOn = DateTimeOffset.UtcNow,
-            ExpiresOn = DateTimeOffset.UtcNow.AddDays(TokenLifeTimeInDays)
+            ExpiresOn = DateTimeOffset.UtcNow.AddHours(TokenLifeTimeInHours)
         };
 
         sasBuilder.SetPermissions(BlobSasPermissions.Read | BlobSasPermissions.Write);
@@ -55,7 +55,7 @@ public class SasTokenGeneratorService
             BlobContainerName = containerClient.Name,
             Resource = "c", // container resource
             StartsOn = DateTimeOffset.UtcNow,
-            ExpiresOn = DateTimeOffset.UtcNow.AddDays(TokenLifeTimeInDays)
+            ExpiresOn = DateTimeOffset.UtcNow.AddHours(TokenLifeTimeInHours)
         };
 
         // Specify the necessary permissions

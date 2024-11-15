@@ -4,6 +4,7 @@ using Core.DTO;
 using Core.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace CloudTestProject.Controllers;
@@ -85,10 +86,18 @@ public class PhotoController(ApplicationDbContext context, BlobStoragePhotoServi
             Name = photoDto.FileName,
             PhotoAlbumId = photoDto.PhotoAlbumId
         };
-        //TODO: save photoData
         
         await Context.AddAsync(photo);
         await Context.SaveChangesAsync();
+        
+        var album = Context.PhotoAlbums.Include(photoAlbum => photoAlbum.User).FirstOrDefault(pa => pa.Id == photo.PhotoAlbumId);
+        
+        await PhotoSvc.UploadPhoto(
+            album!.User.Username, // we use the album we saved the photo to before
+            album.Name,
+            photo.Name,
+            photoData);
+        
         return TypedResults.Created();
     }
 }
